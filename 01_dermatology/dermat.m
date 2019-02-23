@@ -1,7 +1,9 @@
 clear; clc;
 
-X=load('pacientes.txt');
-Y=load('patologias.txt');
+pkg load 'statistics';
+
+X=load('./pacientes.txt');
+Y=load('./patologias.txt');
 
 % Embaralha dados
 I=randperm(358);
@@ -29,8 +31,7 @@ Ypred=A*Xtest;  % Diagnosticos preditos
 [dummy Imax_test]=max(Ytest);
 
 % Calcula porcentagem de acerto
-Perro=100*pdist2(Imax_pred,Imax_test,'hamming'),  % No matlab
-
+%Perro=100*pdist2(Imax_pred,Imax_test,'hamming'),  % No matlab
 Perro=100*length(find(Imax_pred-Imax_test ~= 0))/length(Imax_pred),  % No Octave
 
 Pacerto=100-Perro
