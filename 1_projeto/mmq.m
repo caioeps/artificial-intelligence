@@ -16,11 +16,26 @@ X(:, [5,39]) = [];
 X = X';
 Y = Y';
 
-[_, n_entries,] = size(X);
+[_, n_entries] = size(X);
+
+normalized_Y = []
+
+% [1,3,2]
+% becomes
+% 1 0 0
+% 0 0 1
+% 0 1 0
+for i = 1:n_entries
+  a = [0; 0; 0];
+  a(Y(i), :) = 1;
+  normalized_Y(:, i) = a;
+endfor
+
+Y = normalized_Y
 
 Pacertos = [];
 
-for i = 1:1000
+for i = 1:100
   I=randperm(n_entries);
 
   % Embaralha dados
@@ -51,12 +66,18 @@ for i = 1:1000
   % Calcula porcentagem de acerto
   Perro = 100 * length(find(Imax_pred-Imax_test ~= 0)) / length(Imax_pred);
   Pacerto= 100 - Perro;
-  Pacertos(:, end + 1) = Pacerto;
+  Pacertos(i) = Pacerto;
 endfor
 
-Pacertos_maximum = max(Pacertos)
 Pacertos_minimum = min(Pacertos)
 Pacertos_mean = mean(Pacertos)
+Pacertos_std = std(Pacertos)
+
+figure(1);
+histfit(Pacertos);
+figure(2);
+boxplot(Pacertos);
+
 
 
 
