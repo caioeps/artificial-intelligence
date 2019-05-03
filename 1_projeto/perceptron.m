@@ -42,11 +42,11 @@ end
 
 %% DEFINE ARQUITETURA DA REDE
 %=========================
-n_epochs        = 100;
-n_rounds        = 10;
+n_epochs        = 100000;
+n_rounds        = 1;
 n_output_neuron = 3;    % No. de neuronios na camada de saida
-ptrn            = 0.8;  % Porcentagem usada para treino
-eta             = 0.01; % Passo de aprendizagem
+ptrn            = 0.95;  % Porcentagem usada para treino
+eta             = 0.00000001; % Passo de aprendizagem
 
 %% Inicio do Treino
 for roundNumber = 1:n_rounds,  % LOOP DE RODADAS TREINO/TESTE
@@ -83,12 +83,12 @@ for roundNumber = 1:n_rounds,  % LOOP DE RODADAS TREINO/TESTE
 
       %% Calculate error.
       train_err = train_Y(:,attribute) - Yi;
-      train_quadraticError += 0.5 * sum(train_err.^2);
+      train_quadraticError += eta * sum(train_err.^2);
 
       W += eta * train_err * train_Input';
     end
 
-    train_quadraticErrorMeanTrain(epoch) = train_quadraticError / train_nEntries;
+    train_quadraticErrorMean(epoch) = train_quadraticError / train_nEntries;
   end
 
   test_output = [];
@@ -97,19 +97,21 @@ for roundNumber = 1:n_rounds,  % LOOP DE RODADAS TREINO/TESTE
     %% Test Generated Weight matrix.
     test_Input = [-1; test_X(:,attribute)];
     test_Yi = sign(W * test_Input);
-    test_output = [test_output, test_Yi];
+    test_output = [test_output test_Yi];
 
     %% Calculate error.
     test_err = test_Y(:,attribute) - test_Yi;
-    test_quadraticError += 0.5 * sum(test_err.^2);
+    test_quadraticError += eta * sum(test_err.^2);
   end
 
   test_quadraticErrorMean = test_quadraticError / test_nEntries;
 
+  test_Y
+  test_output
   test_error = test_Y - test_output;
   test_errorSum = sum(abs(test_error));
   test_nErrors = length(find(test_errorSum ~= 0));
-
+  
   test_errorTax(roundNumber) = 100 * (test_nErrors / test_nEntries);
   test_successTax(roundNumber) = 100 - test_errorTax(roundNumber);
 end
@@ -120,4 +122,4 @@ medianTax = median(test_successTax)
 minTax = min(test_successTax)
 maxTax = max(test_successTax)
 
-plot(train_quadraticError)
+plot(train_quadraticErrorMean)
