@@ -43,7 +43,8 @@ for i = 1:100
   Y=Y(:,I);
 
   % 80/20
-  eighty = floor(n_entries * (80/100));
+  % Leave one for testing
+  eighty = floor(n_entries * (97/100));
 
   Xmodel = X(:, 1:eighty);
   Ymodel = X(:, 1:eighty);
@@ -52,6 +53,7 @@ for i = 1:100
   Ytest = Y(:, (eighty + 1):end);
 
   % Construcao do modelo (Determinacao da matriz A)
+  Ymodel
   A=Ymodel * Xmodel' * pinv(Xmodel * Xmodel');
 
   % Teste do modelo
@@ -77,6 +79,8 @@ figure(1);
 histfit(Pacertos);
 figure(2);
 boxplot(Pacertos);
+figure(3);
+plot(Pacertos);
 
 
 

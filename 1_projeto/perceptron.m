@@ -42,11 +42,11 @@ end
 
 %% DEFINE ARQUITETURA DA REDE
 %=========================
-n_epochs        = 100000;
-n_rounds        = 1;
+n_epochs        = 10;
+n_rounds        = 100;
 n_output_neuron = 3;    % No. de neuronios na camada de saida
-ptrn            = 0.95;  % Porcentagem usada para treino
-eta             = 0.00000001; % Passo de aprendizagem
+ptrn            = 0.97;  % Porcentagem usada para treino
+eta             = 0.1; % Passo de aprendizagem
 
 %% Inicio do Treino
 for roundNumber = 1:n_rounds,  % LOOP DE RODADAS TREINO/TESTE
@@ -106,12 +106,10 @@ for roundNumber = 1:n_rounds,  % LOOP DE RODADAS TREINO/TESTE
 
   test_quadraticErrorMean = test_quadraticError / test_nEntries;
 
-  test_Y
-  test_output
   test_error = test_Y - test_output;
   test_errorSum = sum(abs(test_error));
   test_nErrors = length(find(test_errorSum ~= 0));
-  
+
   test_errorTax(roundNumber) = 100 * (test_nErrors / test_nEntries);
   test_successTax(roundNumber) = 100 - test_errorTax(roundNumber);
 end
@@ -122,4 +120,9 @@ medianTax = median(test_successTax)
 minTax = min(test_successTax)
 maxTax = max(test_successTax)
 
-plot(train_quadraticErrorMean)
+figure(1);
+histfit(test_successTax);
+figure(2);
+boxplot(test_successTax);
+figure(3);
+plot(test_quadraticErrorMean);

@@ -19,6 +19,8 @@ Xtest=X(:,301:358);
 Ytest=Y(:,301:358);
 
 % Construcao do modelo (Determinacao da matriz A)
+size(Xmodel)
+size(Ymodel)
 A=Ymodel*Xmodel'*inv(Xmodel*Xmodel');
 
 % Teste do modelo
@@ -33,6 +35,8 @@ Ypred=A*Xtest;  % Diagnosticos preditos
 % Calcula porcentagem de acerto
 %Perro=100*pdist2(Imax_pred,Imax_test,'hamming'),  % No matlab
 Perro=100*length(find(Imax_pred-Imax_test ~= 0))/length(Imax_pred),  % No Octave
+
+Perro
 
 Pacerto=100-Perro
 
