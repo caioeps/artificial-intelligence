@@ -1,94 +1,69 @@
-import random
-import numpy as np
-from scipy.spatial.distance import cdist
-import pandas as pd
-import statistics as st
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score
+#!/usr/bin/env python
+# coding: utf-8
 
-# Load data from CSV.
-dataset = pd.read_csv("./lung-cancer.data", header=None)
+import pandas as pd
+import numpy as np
+import statistics as st
+from sklearn import model_selection
+
+class MQClassifier(object):
+
+    def __init__(self):
+        pass
+
+    def fit(self, X_train, y_train):
+        # adiciona coluna de 1 nos dados
+        X_train = np.insert(X_train, 0, 1, 1)
+
+        # (X^T * X)^-1 * X^T * y
+        # w = y_train @ X.T @ np.linalg.pinv(X @ X.T)
+        # w = np.dot(np.dot(np.linalg.inv(np.dot(X_treino.T,X)),X_treino.T),y_treino)
+        w = np.dot(np.linalg.pinv(X_train), y_train)
+
+        self.w = w
+        self.intercept = self.w[0] # w0
+        self.coef = self.w[1:] # .. + x11*w1 + x12*w2 + ...
+
+    def predict(self, X):
+        # adiciona coluna de 1 nos dados
+        X = np.insert(X, 0, 1, 1)
+        return np.dot(X, self.w) # Y = X * W
+
+data = pd.read_csv('./lung-cancer.data', sep = ',', header = None)
 
 # Filter corrupted attributes.
 ignored_columns = [4, 38]
-dataset.drop(dataset.columns[ignored_columns], axis=1, inplace=True)
+data.drop(data.columns[ignored_columns], axis=1, inplace=True)
 
-# Labels
-Y = dataset.iloc[:, 0].values
-Y_new = []
+X = np.array(data.drop(data.iloc[:,-1] , axis = 1)) # Variáveis independentes
+y = np.array(data.iloc[:, -1]) # escolhendo a variável dependente, ultima coluna
 
-# Represent labels as matrices.
-for y in Y:
-    y_new = [0,0,0]
-    y_new[y-1] = 1
-    Y_new.append(y_new)
-Y = np.array(Y_new)
-
-# Remove labels from dataset. It can probably be done with iloc.
-dataset.drop(dataset.columns[0], axis=1, inplace=True)
-
-X = dataset.iloc[:, :].values
-X = np.array(X)
-
-P_fail = []
 P_success = []
 
 for i in range(0, 100):
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.20, random_state = i)
+    # separa em bases de treino e teste
+    X_treino, X_teste, y_treino, y_teste = model_selection.train_test_split(X, y, test_size = 0.2, random_state = i)
 
-    # Normalize train and test variables.
-    scaler  = StandardScaler()
-    # X_train = scaler.fit_transform(X_train)
-    # X_test  = scaler.transform(X_test)
+    # testando o modelo
+    model = MQClassifier()
 
-    # In order to calculate W, we need to transpose them all.
-    # CxL -> LxC
-    X_train = X_train.transpose()
-    X_test  = X_test.transpose()
-    Y_train = Y_train.transpose()
-    Y_test  = Y_test.transpose()
+    model.fit(X_treino, y_treino)
 
-    # Calculate the weight matrix.
-    W = (Y_train @ X_train.transpose()) @ np.linalg.pinv((X_train @ X_train.transpose()) + (random.uniform(0, 1) * np.eye(len(X_test))))
+    y_pred = model.predict(X_teste)
+    y_pred = [int(round(x)) for x in y_pred]
 
-    # Calculate test data.
-    Y_pred = W @ X_test
+    n_success = [y_pred[i] for i in range(0, len(y_pred)) if y_pred[i] == y_teste[i]]
+    n_success = len(n_success)
 
-    # print(Y_test.shape)
-    # print(Y_pred.shape)
-    # print(Y_test)
-    # print(Y_pred)
+    p_success = n_success / len(y_teste) * 100
+    P_success.append(p_success)
 
-    # Y_pred = scaler.inverse_transform(Y_pred.transpose())
+P_success_min = min(P_success)
+P_success_max = max(P_success)
+P_success_mean = st.mean(P_success)
+P_success_std = st.stdev(P_success)
 
-    Y_pred_t = Y_pred.transpose()
-    Y_test_t = Y_test.transpose()
+print("P_success_min: ", P_success_min)
+print("P_success_mean: ", P_success_mean)
+print("P_success_std: ", P_success_std)
 
-    # [0.1, 0.89, 0.80] => [0, 1, 0]
-    for i in range(0, len(Y_pred_t) - 1):
-        y_pred = Y_pred_t[i]
-        Y_pred_t[i] = [1 if x == max(y_pred) else 0 for x in y_pred]
-
-    n_fails = 0
-    n_success = 0
-    for i in range(0, len(Y_pred_t) - 1):
-        y_pred = Y_pred_t[i]
-        y_test = Y_test_t[i]
-
-        if y_pred == Y_test:
-            n_success += 1
-        else:
-            n_fails += 1
-
-    P_success.append(100 * (n_success / len(Y_pred_t)))
-    P_fail.append(100 * (n_fails / len(Y_pred_t)))
-
-P_fail_min = min(P_fail)
-P_fail_max = max(P_fail)
-P_fail_mean = st.mean(P_fail)
-P_fail_std = st.stdev(P_fail)
-
-print("P_fail_min: ", P_fail_min)
-print("P_fail_mean: ", P_fail_mean)
-print("P_fail_std: ", P_fail_std)
