@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python3
 
 import pandas as pd
 import numpy as np
@@ -17,7 +16,7 @@ class MQClassifier(object):
 
         # (X^T * X)^-1 * X^T * y
         # w = y_train @ X.T @ np.linalg.pinv(X @ X.T)
-        # w = np.dot(np.dot(np.linalg.inv(np.dot(X_treino.T,X)),X_treino.T),y_treino)
+        # w = np.dot(np.dot(np.linalg.inv(np.dot(X_train.T,X)),X_treino.T),y_train)
         w = np.dot(np.linalg.pinv(X_train), y_train)
 
         self.w = w
@@ -41,21 +40,20 @@ y = np.array(data.iloc[:, -1]) # escolhendo a variável dependente, ultima colun
 P_success = []
 
 for i in range(0, 100):
-    # separa em bases de treino e teste
-    X_treino, X_teste, y_treino, y_teste = model_selection.train_test_split(X, y, test_size = 0.2, random_state = i)
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size = 0.2, random_state = i)
 
     # testando o modelo
     model = MQClassifier()
 
-    model.fit(X_treino, y_treino)
+    model.fit(X_train, y_train)
 
-    y_pred = model.predict(X_teste)
+    y_pred = model.predict(X_test)
     y_pred = [int(round(x)) for x in y_pred]
 
-    n_success = [y_pred[i] for i in range(0, len(y_pred)) if y_pred[i] == y_teste[i]]
+    n_success = [y_pred[i] for i in range(0, len(y_pred)) if y_pred[i] == y_test[i]]
     n_success = len(n_success)
 
-    p_success = n_success / len(y_teste) * 100
+    p_success = n_success / len(y_test) * 100
     P_success.append(p_success)
 
 P_success_min = min(P_success)
