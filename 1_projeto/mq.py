@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 
+import os
 import pandas as pd
 import numpy as np
 import statistics as st
+import pylab
 from sklearn import model_selection
+import matplotlib.pyplot as pyplot
+from matplotlib.pyplot import hist, boxplot
 
 class MQClassifier(object):
 
@@ -28,7 +32,8 @@ class MQClassifier(object):
         X = np.insert(X, 0, 1, 1)
         return np.dot(X, self.w) # Y = X * W
 
-data = pd.read_csv('./lung-cancer.data', sep = ',', header = None)
+data_file = "%s/lung-cancer.data" % os.path.dirname(__file__)
+data = pd.read_csv(data_file, sep = ',', header = None)
 
 # Filter corrupted attributes.
 ignored_columns = [4, 38]
@@ -65,3 +70,9 @@ print("P_success_min: ", P_success_min)
 print("P_success_mean: ", P_success_mean)
 print("P_success_std: ", P_success_std)
 
+pyplot.figure(1)
+hist(P_success)
+pyplot.figure(2)
+boxplot(P_success)
+
+pylab.show()

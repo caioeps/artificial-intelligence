@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
+import os
 import pandas as pd
 import numpy as np
 import statistics as st
 from sklearn import model_selection, linear_model
+import pylab
+import matplotlib.pyplot as pyplot
+from matplotlib.pyplot import hist, boxplot
 
-data = pd.read_csv('./lung-cancer.data', sep = ',', header = None)
+data_file = "%s/lung-cancer.data" % os.path.dirname(__file__)
+data = pd.read_csv(data_file, sep = ',', header = None)
 
 # Filter corrupted attributes.
 ignored_columns = [4, 38]
@@ -40,6 +45,13 @@ P_success_std = st.stdev(P_success)
 print("P_success_min: ", P_success_min)
 print("P_success_mean: ", P_success_mean)
 print("P_success_std: ", P_success_std)
+
+pyplot.figure(1)
+hist(P_success)
+pyplot.figure(2)
+boxplot(P_success)
+
+pylab.show()
 
 
 
