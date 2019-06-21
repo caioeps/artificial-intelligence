@@ -6,5 +6,5 @@ Install python 3.
 # Dependencies
 
 ```bash
-pip3 install pandas numpy sklearn matplotlib
+pip3 install pandas numpy sklearn matplotlib scikit-image
 ```
