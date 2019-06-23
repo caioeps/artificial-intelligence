@@ -2,6 +2,7 @@ import os
 import re
 from PIL import Image
 import numpy as np
+from skimage.util import random_noise
 
 __data_dir = "%s/YALE-A/" % os.path.dirname(__file__)
 
@@ -33,5 +34,8 @@ def __get_subject_number(data_entry):
 def __get_image(subject, expression):
     image = Image.open("%s/%s.%s" % (__data_dir, subject, expression))
     image = image.resize((50, 50), Image.ANTIALIAS)
-    return np.array(image).flatten()
+    image = np.array(image)
+    image = image.flatten()
+    image = random_noise(image, 's&p')
+    return image
 

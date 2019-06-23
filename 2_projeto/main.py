@@ -14,10 +14,12 @@ sys.path.append(os.path.dirname(__file__))
 from classifiers import MQClassifier, Perceptron, MLPClassifier
 from preprocessing import load_data, get_images, get_subject_numbers
 
+n_iterations = 5
+
 def mq_pca():
     print('MQ...')
     P_success = []
-    for i in range(0, 20):
+    for i in range(0, n_iterations):
         data = load_data()
         subjects = get_subject_numbers(data)
         images = get_images(data)
@@ -51,7 +53,7 @@ def mq_pca():
 def perceptron_pca():
     print('Perceptron...')
     P_success = []
-    for i in range(0, 20):
+    for i in range(0, n_iterations):
         data = load_data()
         subjects = get_subject_numbers(data)
         images = get_images(data)
@@ -85,7 +87,7 @@ def perceptron_pca():
 def mlp_pca():
     print('MLP...')
     P_success = []
-    for i in range(0, 20):
+    for i in range(0, n_iterations):
         data = load_data()
         subjects = get_subject_numbers(data)
         images = get_images(data)
