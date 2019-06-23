@@ -36,6 +36,6 @@ def __get_image(subject, expression):
     image = image.resize((50, 50), Image.ANTIALIAS)
     image = np.array(image)
     image = image.flatten()
-    image = random_noise(image, 's&p')
+    image = random_noise(image, 's&p', amount=0.05)
     return image
 
