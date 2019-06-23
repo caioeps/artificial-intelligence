@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.linear_model import Perceptron
+from sklearn.neural_network import MLPClassifier
 
 class MQClassifier(object):
     def __init__(self):
