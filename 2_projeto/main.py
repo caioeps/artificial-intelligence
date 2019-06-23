@@ -1,6 +1,5 @@
 import sys
 import os
-import mimetypes
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +13,7 @@ sys.path.append(os.path.dirname(__file__))
 from classifiers import MQClassifier, Perceptron, MLPClassifier
 from preprocessing import load_data, get_images, get_subject_numbers
 
-n_iterations = 5
+n_iterations = 100
 
 def mq_pca():
     print('MQ...')
@@ -105,7 +104,7 @@ def mlp_pca():
         X_train = pca.transform(X_train)
         X_test = pca.transform(X_test)
 
-        mlp = MLPClassifier()
+        mlp = MLPClassifier(hidden_layer_sizes=(100,100,100), max_iter=100)
         mlp.fit(X_train, y_train)
 
         y_pred = mlp.predict(X_test)
@@ -132,7 +131,7 @@ def print_stats(P_success):
     print("p_mean: ", p_mean)
     print("p_std: ", p_std)
 
-mq_pca()
-perceptron_pca()
+# mq_pca()
+# perceptron_pca()
 mlp_pca()
 
